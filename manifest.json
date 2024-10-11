@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Rise In Time Extra",
+  "version": "2.4",
+  "description": "Changes some features like artifact color or adding fake pfp",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.riseintime.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "host_permissions": [
+    "*://*.riseintime.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
