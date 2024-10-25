@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Rise In Time Extra",
-  "version": "2.4",
+  "version": "2.5",
   "description": "Changes some features like artifact color or adding fake pfp",
   "permissions": [
     "storage",

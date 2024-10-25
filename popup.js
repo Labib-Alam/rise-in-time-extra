@@ -4,7 +4,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		Loading.style.display = "block";
 		setTimeout(() => {
 			window.close();
-		}, 3000);
+		}, 5000);
 	}
 });
 
@@ -540,10 +540,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			chrome.tabs.sendMessage(tabs[0].id, { hideTxt: isChecked_txt });
 		});
 	});
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		chrome.tabs.sendMessage(tabs[0].id, { hideTxt: hide_txt_.checked });
+	});
 });
-
-
-chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-	chrome.tabs.sendMessage(tabs[0].id, { hideTxt: hide_txt_.checked });
-});
-

@@ -124,12 +124,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	}
 	//console.log(_arti);
 });
-document.addEventListener("mousemove", () => {
-	//console.log(_arti);
-	if (_arti === "true" || _arti === true) {
-		loadSettingsAndApply();
-	}
-});
+//document.addEventListener("mousemove", () => {
+//	//console.log(_arti);
+//	if (_arti === "true" || _arti === true) {
+//		loadSettingsAndApply();
+//	}
+//});
 
 //________________________________________________________________________________custom_pfp___________________________________________________________________________________//
 
@@ -281,12 +281,12 @@ function updatePFP() {
 	//}
 }
 
-document.addEventListener("mousemove", () => {
-	//console.log(_arti);
-	if (_pfp === "true" || _pfp === true) {
-		updatePFP();
-	}
-});
+//document.addEventListener("mousemove", () => {
+//	//console.log(_arti);
+//	if (_pfp === "true" || _pfp === true) {
+//		updatePFP();
+//	}
+//});
 
 //________________________________________________________________________________hide_txt___________________________________________________________________________________//
 
@@ -314,8 +314,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Initial check on page load to hide/show text based on stored state
-document.addEventListener("mousemove", () => {
-	if (hid_txt === "true" || hid_txt === true) {
+//document.addEventListener("mousemove", () => {
+//	if (hid_txt === "true" || hid_txt === true) {
+//		hide_txt();
+//	}
+//});
+
+
+//-------run-------\\
+function runALL() {
+	if (_arti === "true" || _arti === true) {
+		loadSettingsAndApply();
+	}if (_pfp === "true" || _pfp === true) {
+		updatePFP();
+	}if (hid_txt === "true" || hid_txt === true) {
 		hide_txt();
 	}
-});
+	console.log("update function called")
+}
+setInterval(runALL, 500);
