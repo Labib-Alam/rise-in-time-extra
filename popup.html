@@ -4,20 +4,6 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Artifact Color Changer</title>
-		<style>
-			body {
-				font-family: Arial, sans-serif;
-				margin: 10px;
-				width: 485px;
-			}
-			label {
-				display: block;
-				margin-top: 10px;
-			}
-			input[type="color"] {
-				width: 100%;
-			}
-		</style>
 		<link rel="stylesheet" href="popup.css" />
 	</head>
 	<body>
@@ -29,7 +15,9 @@
 		</center>
 
 		<div id="arti_drop" class="drop_down">
-			<h3>Artifact Color <b style="font-size: x-large"> ↓</b></h3>
+			<h3>
+				Artifact Color <b style="font-size: x-large"> ↓</b> <span class="rank">(Recommended) (customizable)</span>
+			</h3>
 		</div>
 		<div id="Artifact_color" style="display: none">
 			<span>on/off</span>
@@ -64,7 +52,9 @@
 		</div>
 		<br />
 		<div id="pfp_drop" class="drop_down">
-			<h3>Fake pfp <b style="font-size: x-large"> ↓</b></h3>
+			<h3>
+				Fake pfp <b style="font-size: x-large"> ↓</b> <span class="rank">(customizable)</span>
+			</h3>
 		</div>
 		<div id="custom_pfp" style="display: none">
 			<br />
@@ -259,7 +249,7 @@
 		<br />
 		<div id="hide_txt_drop" class="drop_down">
 			<h3>
-				hide dominion menu text <b style="font-size: x-large"> ↓</b>
+				hide dominion menu text <b style="font-size: x-large"> ↓</b> <span class="rank">(Recommended)</span>
 			</h3>
 		</div>
 		<div id="hide_txt" style="display: none">
@@ -271,8 +261,21 @@
 			</label>
 			<br /><br /><br />
 		</div>
-		
-
+		<br />		
+		<div id="Search_user_drop" class="drop_down">
+			<h3>
+				Search Leaderboard <b style="font-size: x-large"> ↓</b> <span class="rank">(Recommended)</span>
+			</h3>
+		</div>
+		<div id="Search_user" style="display: none">
+			<br />
+			<span>on/off</span>
+			<label class="switch">
+				<input type="checkbox" id="Search_active" />
+				<span class="slider round"></span>
+			</label>
+			<br /><br /><br />
+		</div>
 		<script src="popup.js"></script>
 	</body>
 </html>

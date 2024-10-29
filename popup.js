@@ -21,6 +21,8 @@ let pfp_visible = false;
 let pfp_active = false;
 let hide_txt_visible = false;
 let hide_txt_active = false;
+let Search_user_visible = false;
+let Search_user_active = false;
 
 
 //________________________________________________________________________________Artifact___________________________________________________________________________________\\
@@ -542,5 +544,53 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		chrome.tabs.sendMessage(tabs[0].id, { hideTxt: hide_txt_.checked });
+	});
+});
+//________________________________________________________________________________Search_user___________________________________________________________________________________\\
+
+
+document.getElementById("Search_user_drop").addEventListener("click", () => {
+	if (Search_user_visible) {
+		Search_user_visible = false;
+		document.getElementById("Search_user").style.display = "none";
+	} else {
+		Search_user_visible = true;
+		document.getElementById("Search_user").style.display = "block";
+	}
+});
+const Search_ = document.getElementById("Search_active");
+// Listen for changes on the checkbox
+Search_.addEventListener("change", () => {
+	if (Search_.checked) {
+		Search_user_active = true;
+		// Add any additional actions you want to trigger when the switch is on
+	} else {
+		Search_user_active = false;
+		// Add any additional actions you want to trigger when the switch is off
+	}
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+
+	// Load the saved state from localStorage when the page loads
+	if (localStorage.getItem("Search_state") === "true") {
+		Search_.checked = true;
+	} else {
+		Search_.checked = false;
+	}
+
+	// Save the state to localStorage whenever the switch is toggled
+	Search_.addEventListener("change", () => {
+		const isChecked_Search = Search_.checked;
+		localStorage.setItem("Search_state", isChecked_Search);
+
+		// Communicate the state to the content script
+		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			chrome.tabs.sendMessage(tabs[0].id, { SearchUser: isChecked_Search });
+		});
+	});
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		chrome.tabs.sendMessage(tabs[0].id, { SearchUser: Search_.checked });
 	});
 });

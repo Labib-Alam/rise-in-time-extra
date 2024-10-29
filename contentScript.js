@@ -299,10 +299,8 @@ function hide_txt() {
 }
 let hid_txt = undefined;
 
-
 // Listen for messages from the popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	
 	if (request.hideTxt !== undefined) {
 		hid_txt = request.hideTxt;
 		console.log(hid_txt);
@@ -320,16 +318,79 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 //	}
 //});
 
+//-----------------------------------------------search bar------------------------------------------------------------\\
 
-//-------run-------\\
+// Insert search bar at the top of ranking-user-container
+
+function findUser() {
+	const rankingUserContainer = document.querySelector(
+		".ranking-user-container"
+	);
+
+	if (rankingUserContainer) {
+		// Check if the search bar already exists
+		let searchBar = rankingUserContainer.querySelector(".user-search-bar");
+
+		// If the search bar doesn't exist, create and insert it
+		if (!searchBar) {
+			searchBar = document.createElement("input");
+			searchBar.type = "text";
+			searchBar.placeholder = "Search users...";
+			searchBar.className = "user-search-bar"; // Assign a class to identify the search bar
+			searchBar.style.marginBottom = "10px";
+
+			// Insert the search bar at the top of "ranking-user-container"
+			rankingUserContainer.prepend(searchBar);
+
+			// Add event listener for search functionality
+			searchBar.addEventListener("input", function () {
+				const searchText = searchBar.value.toLowerCase(); // Convert search term to lowercase
+				const userRows = rankingUserContainer.querySelectorAll(
+					".ranking-row.flex.jc-sa"
+				);
+
+				userRows.forEach((row) => {
+					const username = row
+						.querySelector(".item-username")
+						.textContent.toLowerCase(); // Convert username to lowercase
+
+					// Show or hide based on case-insensitive match
+					if (username.includes(searchText)) {
+						row.style.display = ""; // Show the row
+					} else {
+						row.style.display = "none"; // Hide the row
+					}
+				});
+			});
+		}
+	}
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.SearchUser !== undefined) {
+		Search_User = request.SearchUser;
+		console.log(Search_User);
+	}
+	console.log(Search_User);
+	if (Search_User === "true" || Search_User === true) {
+		findUser();
+	}
+});
+
+//---------------------------------------------run---------------------------------------------\\
 function runALL() {
 	if (_arti === "true" || _arti === true) {
 		loadSettingsAndApply();
-	}if (_pfp === "true" || _pfp === true) {
+	}
+	if (_pfp === "true" || _pfp === true) {
 		updatePFP();
-	}if (hid_txt === "true" || hid_txt === true) {
+	}
+	if (hid_txt === "true" || hid_txt === true) {
 		hide_txt();
 	}
-	console.log("update function called")
+	if (Search_User === "true" || Search_User === true) {
+		findUser();
+	}
+	console.log("update function called");
 }
 setInterval(runALL, 500);

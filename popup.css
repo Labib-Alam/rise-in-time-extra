@@ -5,8 +5,22 @@
   border-style: ridge;
   border-color: red;
 }
-body{
+body {
+  font-family: Arial, sans-serif;
+  margin: 10px;
+  width: 485px;
   background-color: rgb(44, 44, 44);
+}
+label {
+  display: block;
+  margin-top: 10px;
+}
+input[type="color"] {
+  width: 100%;
+}
+.rank{
+  color :#d9ff00;
+  font-size: 11px
 }
 label{
   color: white;
