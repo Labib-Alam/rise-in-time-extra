@@ -1,12 +1,18 @@
+//________________________________________________________________________________loading_popup___________________________________________________________________________________\\
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-	if (request.closePopup) {
-		const Loading = document.getElementById("Loading");
-		Loading.style.display = "block";
-		setTimeout(() => {
-			window.close();
-		}, 5000);
-	}
+		if (request.closePopup) {
+			const Loading = document.getElementById("Loading");
+			Loading.style.display = "block";
+			// const menuItems = document.querySelectorAll('.menu');
+			// menuItems.forEach(item => { item.style.display = 'block'; });
+			setTimeout(() => {
+				window.close();
+			}, 300);
+		}
 });
+
+//________________________________________________________________________________variables___________________________________________________________________________________\\
 
 let fillColor_attack = "#fc0303";
 let fillColor_mining = "#03e8fc";
@@ -23,7 +29,6 @@ let hide_txt_visible = false;
 let hide_txt_active = false;
 let Search_user_visible = false;
 let Search_user_active = false;
-
 
 //________________________________________________________________________________Artifact___________________________________________________________________________________\\
 
@@ -491,8 +496,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 });
 
-
-
 //________________________________________________________________________________hide_txt___________________________________________________________________________________\\
 
 const hide_txt_ = document.getElementById("text_hide_active");
@@ -507,8 +510,6 @@ hide_txt_.addEventListener("change", () => {
 	}
 });
 
-
-
 document.getElementById("hide_txt_drop").addEventListener("click", () => {
 	if (hide_txt_visible) {
 		hide_txt_visible = false;
@@ -519,11 +520,7 @@ document.getElementById("hide_txt_drop").addEventListener("click", () => {
 	}
 });
 
-
-
 document.addEventListener("DOMContentLoaded", () => {
-
-
 	// Load the saved state from localStorage when the page loads
 	const savedState_txt = localStorage.getItem("hide_txt_active_state");
 	if (savedState_txt === "true") {
@@ -548,7 +545,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 //________________________________________________________________________________Search_user___________________________________________________________________________________\\
 
-
 document.getElementById("Search_user_drop").addEventListener("click", () => {
 	if (Search_user_visible) {
 		Search_user_visible = false;
@@ -571,8 +567,6 @@ Search_.addEventListener("change", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-
-
 	// Load the saved state from localStorage when the page loads
 	if (localStorage.getItem("Search_state") === "true") {
 		Search_.checked = true;
@@ -587,7 +581,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 		// Communicate the state to the content script
 		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-			chrome.tabs.sendMessage(tabs[0].id, { SearchUser: isChecked_Search });
+			chrome.tabs.sendMessage(tabs[0].id, {
+				SearchUser: isChecked_Search,
+			});
 		});
 	});
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

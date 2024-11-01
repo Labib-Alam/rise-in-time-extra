@@ -4,11 +4,14 @@
   padding-left: 30px;
   border-style: ridge;
   border-color: red;
+  box-shadow : 0 0px 10px 0 rgb(0, 217, 255), 0 0px 10px 0 rgb(0, 174, 255);
+  margin-left : 10px;
+  margin-right : 10px;
 }
 body {
   font-family: Arial, sans-serif;
   margin: 10px;
-  width: 485px;
+  width: 520px;
   background-color: rgb(44, 44, 44);
 }
 label {
@@ -22,19 +25,7 @@ input[type="color"] {
   color :#d9ff00;
   font-size: 11px
 }
-label{
-  color: white;
-}
-h1{
-  color: white;
-}
-h2{
-  color: white;
-}
-p{
-  color: white;
-}
-span{
+label, h1, h2, p, span{
   color: white;
 }
 .switch {
@@ -105,4 +96,13 @@ input:checked + .slider:before {
 }
 .menu-text {
   display: none !important;
+}
+.menu{
+  background-color: rgb(73, 73, 73);
+  padding : 23px;
+  box-shadow : 0 0px 10px 0 rgb(0, 217, 255), 0 0px 10px 0 rgb(0, 174, 255);
+  -webkit-clip-path: inset(0px -10px -10px -10px);
+  clip-path: inset(0px -10px -10px -10px);
+  margin-left : 10px;
+  margin-right : 10px;
 }

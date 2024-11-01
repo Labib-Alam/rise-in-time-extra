@@ -365,7 +365,7 @@ function findUser() {
 		}
 	}
 }
-
+let Search_User = undefined;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.SearchUser !== undefined) {
 		Search_User = request.SearchUser;
