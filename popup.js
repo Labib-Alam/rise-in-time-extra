@@ -8,9 +8,25 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		// menuItems.forEach(item => { item.style.display = 'block'; });
 		setTimeout(() => {
 			window.close();
-		}, 300);
+		}, 50);
 	}
 });
+//chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//	if (request.closePopup) {
+//		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+//			// Check if the active tab is the sender tab
+//			if (tabs[0].id === sender.tab.id) {
+//				const Loading = document.getElementById("Loading");
+//				Loading.style.display = "block";
+//				// const menuItems = document.querySelectorAll('.menu');
+//				// menuItems.forEach(item => { item.style.display = 'block'; });
+//				setTimeout(() => {
+//					window.close();
+//				}, 50);
+//			}
+//		});
+//	}
+//});
 
 //________________________________________________________________________________variables___________________________________________________________________________________\\
 

@@ -79,7 +79,7 @@ function loadSettingsAndApply() {
 // Save settings to storage
 function saveSettings(settings) {
 	chrome.storage.sync.set(settings, () => {
-		console.log("Settings saved", settings);
+		//console.log("Settings saved", settings);
 	});
 }
 
@@ -309,9 +309,9 @@ let hid_txt = undefined;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.hideTxt !== undefined) {
 		hid_txt = request.hideTxt;
-		console.log(hid_txt);
+		//console.log(hid_txt);
 	}
-	console.log(hid_txt);
+	//console.log(hid_txt);
 	if (hid_txt === "true" || hid_txt === true) {
 		hide_txt();
 	}
@@ -376,9 +376,9 @@ let Search_User = undefined;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.SearchUser !== undefined) {
 		Search_User = request.SearchUser;
-		console.log(Search_User);
+		//console.log(Search_User);
 	}
-	console.log(Search_User);
+	//console.log(Search_User);
 	if (Search_User === "true" || Search_User === true) {
 		findUser();
 	}
@@ -406,6 +406,6 @@ function runALL() {
 	if (Search_User === "true" || Search_User === true) {
 		findUser();
 	}
-	console.log("update function called");
+	//console.log("update function called");
 }
-setInterval(runALL, 500);
+setInterval(runALL, 200);
