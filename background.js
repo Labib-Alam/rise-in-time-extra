@@ -4,6 +4,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       chrome.action.openPopup(() => {
         chrome.runtime.sendMessage({ closePopup: true });
       });
-    }, 500); // Delay in milliseconds
+    }, 200); // Delay in milliseconds
   }
 });
+
