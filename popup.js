@@ -1,15 +1,15 @@
 //________________________________________________________________________________loading_popup___________________________________________________________________________________\\
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-		if (request.closePopup) {
-			const Loading = document.getElementById("Loading");
-			Loading.style.display = "block";
-			// const menuItems = document.querySelectorAll('.menu');
-			// menuItems.forEach(item => { item.style.display = 'block'; });
-			setTimeout(() => {
-				window.close();
-			}, 300);
-		}
+	if (request.closePopup) {
+		const Loading = document.getElementById("Loading");
+		Loading.style.display = "block";
+		// const menuItems = document.querySelectorAll('.menu');
+		// menuItems.forEach(item => { item.style.display = 'block'; });
+		setTimeout(() => {
+			window.close();
+		}, 300);
+	}
 });
 
 //________________________________________________________________________________variables___________________________________________________________________________________\\
@@ -29,7 +29,8 @@ let hide_txt_visible = false;
 let hide_txt_active = false;
 let Search_user_visible = false;
 let Search_user_active = false;
-
+let Summon_all_visible = false;
+let Summon_all_active = false;
 //________________________________________________________________________________Artifact___________________________________________________________________________________\\
 
 // Add event listeners to color input fields
@@ -588,5 +589,53 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		chrome.tabs.sendMessage(tabs[0].id, { SearchUser: Search_.checked });
+	});
+
+});
+//________________________________________________________________________________Summon_all___________________________________________________________________________________\\
+
+document.getElementById("Summon_all_drop").addEventListener("click", () => {
+	if (Summon_all_visible) {
+		Summon_all_visible = false;
+		document.getElementById("Summon_all").style.display = "none";
+	} else {
+		Summon_all_visible = true;
+		document.getElementById("Summon_all").style.display = "block";
+	}
+});
+const Summon_ = document.getElementById("Summon_active");
+// Listen for changes on the checkbox
+Summon_.addEventListener("change", () => {
+	if (Summon_.checked) {
+		Summon_all_active = true;
+		// Add any additional actions you want to trigger when the switch is on
+	} else {
+		Summon_all_active = false;
+		// Add any additional actions you want to trigger when the switch is off
+	}
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+	// Load the saved state from localStorage when the page loads
+	if (localStorage.getItem("Summon_state") === "true") {
+		Summon_.checked = true;
+	} else {
+		Summon_.checked = false;
+	}
+
+	// Save the state to localStorage whenever the switch is toggled
+	Summon_.addEventListener("change", () => {
+		const isChecked_Summon = Summon_.checked;
+		localStorage.setItem("Summon_state", isChecked_Summon);
+
+		// Communicate the state to the content script
+		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			chrome.tabs.sendMessage(tabs[0].id, {
+				SummonAll: isChecked_Summon,
+			});
+		});
+	});
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		chrome.tabs.sendMessage(tabs[0].id, { SummonAll: Summon_.checked });
 	});
 });

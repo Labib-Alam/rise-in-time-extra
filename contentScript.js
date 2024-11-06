@@ -124,6 +124,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	}
 	//console.log(_arti);
 });
+let _summon = undefined;
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+	if (request.SummonAll !== undefined) {
+		_summon = request.SummonAll;
+	}
+});
 //document.addEventListener("mousemove", () => {
 //	//console.log(_arti);
 //	if (_arti === "true" || _arti === true) {
@@ -320,8 +326,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 //-----------------------------------------------search bar------------------------------------------------------------\\
 
-// Insert search bar at the top of ranking-user-container
 
+
+// Insert search bar at the top of ranking-user-container
 function findUser() {
 	const rankingUserContainer = document.querySelector(
 		".ranking-user-container"
@@ -376,8 +383,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		findUser();
 	}
 });
+//---------------------------------------------Summoning---------------------------------------------\\
+
+function injectSummonAllScript(){
+	const script = document.createElement('script');
+	script.src = chrome.runtime.getURL('injectedSocketScript.js');
+	document.head.append(script)
+}
 
 //---------------------------------------------run---------------------------------------------\\
+injectSummonAllScript()
 function runALL() {
 	if (_arti === "true" || _arti === true) {
 		loadSettingsAndApply();
