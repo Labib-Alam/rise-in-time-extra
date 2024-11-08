@@ -326,8 +326,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 //-----------------------------------------------search bar------------------------------------------------------------\\
 
-
-
 // Insert search bar at the top of ranking-user-container
 function findUser() {
 	const rankingUserContainer = document.querySelector(
@@ -385,14 +383,27 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 //---------------------------------------------Summoning---------------------------------------------\\
 
-function injectSummonAllScript(){
-	const script = document.createElement('script');
-	script.src = chrome.runtime.getURL('injectedSocketScript.js');
-	document.head.append(script)
+function injectSummonAllScript() {
+	const script = document.createElement("script");
+	script.src = chrome.runtime.getURL("injectedSocketScript.js");
+	document.head.append(script);
 }
+// Listen for messages from popup.js and relay them to the injected script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.SummonAll !== undefined) {
+		// Forward the message to the injected script via window.postMessage
+		window.postMessage(
+			{ type: "SUMMON_ALL", summonAll: request.SummonAll },"*"
+		);
+
+		// Optionally handle in the content script itself
+		console.log("Content script received SummonAll:", request.SummonAll);
+	}
+});
 
 //---------------------------------------------run---------------------------------------------\\
-injectSummonAllScript()
+
+injectSummonAllScript();
 function runALL() {
 	if (_arti === "true" || _arti === true) {
 		loadSettingsAndApply();
