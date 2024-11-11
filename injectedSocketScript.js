@@ -40,12 +40,13 @@ function summonAllMain() {
 	) {
 		window.$socket.on("UPDATE_MAP", function updateCurrentMap(e) {
 			currentMap = e;
-			e.forEach((field) => {
-				//looking for portal field and extracting its region data
-				if (field.nature === "portal") {
-					currentRegion == field.region;
-				}
-			});
+			e.every( (field) => {
+                //looking for portal field and extracting its region data
+                if(field.nature==='portal'){
+                    currentRegion = field.region;
+                    // works like break in this context 
+                    return false;
+            }})
 		});
 	}
 	// checking if current gamestate has any fieldwindow opened if so adding a button to summon troops, the div is needed for styling
@@ -62,24 +63,48 @@ function summonAllMain() {
 				summonButton.id = "summonButton";
 				summonButton.style.marginTop = "15px";
 				summonButton.style.marginBottom = "15px";
-				summonButton.innerHTML = "Summon Troops";
+                if (summonInterval) summonButton.innerHTML = "Stop Summon";
+                else summonButton.innerHTML = "Summon Troops";
 
 				outerDiv.append(summonButton);
 				fieldWindow.append(outerDiv);
 				// on button click executing the funtion for
-				summonButton.addEventListener("click", () => {
-					summonAllTroops(
-						currentFieldID,
-						currentIslandID,
-						currentOwner,
-						currentMap,
-						currentRegion
-					);
-				});
+				  // on button click executing the funtion for 
+                  summonButton.addEventListener("click", () =>{
+                    if (summonInterval) {
+                        clearInterval(summonInterval);
+                        summonInterval = null;
+                        summonButton.innerHTML = "Summon Troops";
+                        if (currentIslandID!==0 && currentRegion!==''){
+                            window.$socket.emit("CONNECT_MAP", {
+                                region: currentRegion,
+                                islandIndex: currentIslandID});
+                        }
+                    }else{
+                    summonButton.innerHTML = "Stop Summon";
+                    summonAllTroops(currentFieldID, currentIslandID, currentOwner, currentMap, currentRegion)}
+                })
 			}
 		}
 	}
 }
+
+function flashIslands  (flashMap, flashRegion){
+    let i = 0
+    const flash = setInterval(() => {
+        let island = flashMap[i]
+        while (island && (island.islandEventClass === 'none' || island.islandEventClass === null) && i<flashMap.length){
+            i++;
+            island = flashMap[i];
+        }
+        if (i>= flashMap.length)clearInterval(flash);
+            
+        window.$socket.emit("CONNECT_MAP", {
+        region: flashRegion,
+        islandIndex: island.index});
+        i++;
+    }, 1000);
+}    
 
 function summonAllTroops(
 	summonFieldID,
@@ -123,9 +148,7 @@ function summonAllTroops(
 					launchedAt: window.$ping / 2,
 					wasSentBlindly: false,
 				},
-				() => {
-					"sent";
-				}
+				() => {}
 			);
 		}
 		i++;
@@ -139,6 +162,48 @@ function summonAllTroops(
 		}
 	}, 600);
 }
+
+function AutoReroll(rerollID, min_recruit_lvl=0,min_mining_lvl = 0) {
+    let AllowedUnits = ["spotterNaki", "elderSpirit","grassSpirit","druidNaki","guardNaki","pangoan","ranax","forestSpirit", "nyxi"]
+
+    function reroll(fieldIndex,islandIndex){
+        window.$socket.emit("PUT_FIELD_UPGRADE_REROLL", {
+            placeIndex: fieldIndex,
+            islandIndex: islandIndex
+        })
+    }
+
+    function checkConditions(newUnits, fieldbuffs) {
+        // Check if any value in newUnits matches any value in AllowedUnits
+        const unitMatch = newUnits.some((unit) => AllowedUnits.includes(unit));
+
+        // Check if recruiting and mining levels meet minimum requirements
+        
+        const miningLevel = fieldbuffs?.['mining']?.level ?? 0;
+        const recruitingLevel = fieldbuffs?.['recruiting']?.level ?? 0;
+    
+    // Return true if both levels are above the threshold, false otherwise
+        const levelsMet =  miningLevel >= min_mining_lvl && recruitingLevel >= min_recruit_lvl;
+        console.log(levelsMet, unitMatch)
+        return unitMatch && levelsMet;
+    }
+
+    window.$socket.on("UPDATE_FIELD", (e)=>{
+        if (e.index === rerollID){
+            if(checkConditions(e.recruitableUnits, e.fieldBuffs)){
+                console.log("Conditions met. Stopping reroll.");
+                return
+            }
+
+            setTimeout(() =>{reroll(rerollID, currentIslandID)},650)
+        }
+        })
+    window.$socket.emit("GET_FIELD", {
+        islandIndex: currentIslandID,
+        placeIndex: rerollID
+    })
+}
+
 
 
 //---------------------------------------------run---------------------------------------------\\
