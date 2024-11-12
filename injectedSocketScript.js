@@ -1,5 +1,3 @@
-const { NONAME } = require("dns");
-
 // variable names
 let currentMap = [];
 let currentFieldID = 0;
