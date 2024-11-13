@@ -4,7 +4,7 @@ let currentFieldID = 0;
 let currentIslandID = 0;
 let currentOwner = "";
 let currentRegion = "";
-
+let summonInterval = null
 let StateOFSummon = undefined;
 
 // Listen for forwarded messages from contentScript.js
@@ -161,6 +161,7 @@ function summonAllTroops(
 			});
 		}
 	}, 600);
+	summonInterval = sendTroops
 }
 
 function AutoReroll(rerollID, min_recruit_lvl=0,min_mining_lvl = 0) {
