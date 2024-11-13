@@ -47,6 +47,8 @@ let Search_user_visible = false;
 let Search_user_active = false;
 let Summon_all_visible = false;
 let Summon_all_active = false;
+let reroll_visible = false;
+let reroll_active = false;
 //________________________________________________________________________________Artifact___________________________________________________________________________________\\
 
 // Add event listeners to color input fields
@@ -606,7 +608,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		chrome.tabs.sendMessage(tabs[0].id, { SearchUser: Search_.checked });
 	});
-
 });
 //________________________________________________________________________________Summon_all___________________________________________________________________________________\\
 
@@ -654,4 +655,215 @@ document.addEventListener("DOMContentLoaded", () => {
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		chrome.tabs.sendMessage(tabs[0].id, { SummonAll: Summon_.checked });
 	});
+});
+
+//________________________________________________________________________________auto_reroll___________________________________________________________________________________\\
+
+document.getElementById("Reroll_drop").addEventListener("click", () => {
+	if (reroll_visible) {
+		reroll_visible = false;
+		document.getElementById("Auto_reroll").style.display = "none";
+	} else {
+		reroll_visible = true;
+		document.getElementById("Auto_reroll").style.display = "block";
+	}
+});
+const Reroll_ = document.getElementById("reroll_active");
+// Listen for changes on the checkbox
+Reroll_.addEventListener("change", () => {
+	if (Reroll_.checked) {
+		reroll_active = true;
+		// Add any additional actions you want to trigger when the switch is on
+	} else {
+		reroll_active = false;
+		// Add any additional actions you want to trigger when the switch is off
+	}
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+	// Load the saved state from localStorage when the page loads
+	if (localStorage.getItem("Reroll_state") === "true") {
+		Reroll_.checked = true;
+	} else {
+		Reroll_.checked = false;
+	}
+
+	// Save the state to localStorage whenever the switch is toggled
+	Reroll_.addEventListener("change", () => {
+		const isChecked_Reroll = Reroll_.checked;
+		localStorage.setItem("Reroll_state", isChecked_Reroll);
+
+		// Communicate the state to the content script
+		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			chrome.tabs.sendMessage(tabs[0].id, {
+				RerollAll: isChecked_Reroll,
+			});
+		});
+	});
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		chrome.tabs.sendMessage(tabs[0].id, { RerollAll: Reroll_.checked });
+	});
+});
+
+// Function to save the class state of images to localStorage
+function saveClassState() {
+	const imgElements = document.querySelectorAll("img.img_unit");
+	const classState = Array.from(imgElements).map((img) => ({
+		dataValue: img.getAttribute("data-value"),
+		isChecked: img.classList.contains("checked"),
+	}));
+	localStorage.setItem("imgClassState", JSON.stringify(classState));
+}
+
+// Function to restore the class state of images from localStorage
+function restoreClassState() {
+	const classState = JSON.parse(
+		localStorage.getItem("imgClassState") || "[]"
+	);
+	classState.forEach((state) => {
+		const imgElement = document.querySelector(
+			`img.img_unit[data-value="${state.dataValue}"]`
+		);
+		if (imgElement) {
+			if (state.isChecked) {
+				imgElement.classList.add("checked");
+			} else {
+				imgElement.classList.remove("checked");
+			}
+		}
+	});
+}
+
+// Event listener to restore class state on popup load and save on each click
+document.addEventListener("DOMContentLoaded", () => {
+	restoreClassState(); // Restore class state when popup opens
+
+	document.querySelectorAll("img.img_unit").forEach((img) => {
+		img.addEventListener("click", () => {
+			img.classList.toggle("checked"); // Toggle checked class
+			saveClassState(); // Save the new state
+			sendDataValuesToContentScript();
+		});
+	});
+});
+
+// document.querySelectorAll(".img_unit").forEach((image) => {
+// 	image.addEventListener("click", function () {
+// 		this.classList.toggle("checked");
+// 		sendDataValuesToContentScript();
+// 	});
+// });
+
+// Function to gather data from images with class "img_unit checked"
+function sendDataValuesToContentScript() {
+	// Select all img elements with the class "img_unit checked"
+	const imgElements = document.querySelectorAll(".checked");
+	console.log(imgElements);
+
+	// Extract the data-value attribute from each img element
+	const dataValues = Array.from(imgElements).map((img) =>
+		img.getAttribute("data-value")
+	);
+
+	// Send the data to the content script in the active tab
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		if (tabs[0]?.id) {
+			chrome.tabs.sendMessage(tabs[0].id, {
+				type: "IMG_DATA_VALUES",
+				dataValues: dataValues,
+			});
+		}
+	});
+}
+
+// Function to save selected values to localStorage and send to contentScript.js
+function saveAndSendDropdownValues() {
+	const miningSelect = document.querySelector("#miningSelect");
+	const recruitingSelect = document.querySelector("#recruitingSelect");
+
+	const selectedValues = {
+		minimumMiningAllowed: miningSelect.value,
+		minimumRecruitingAllowed: recruitingSelect.value,
+	};
+
+	// Save to localStorage
+	localStorage.setItem("dropdownValues", JSON.stringify(selectedValues));
+
+	// Send the data to contentScript.js in the active tab
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		if (tabs[0]?.id) {
+			chrome.tabs.sendMessage(tabs[0].id, {
+				type: "DROPDOWN_VALUES",
+				values: selectedValues,
+			});
+		}
+	});
+}
+
+// Restore saved values from localStorage on popup load
+document.addEventListener("DOMContentLoaded", () => {
+	const miningSelect = document.querySelector("#miningSelect");
+	const recruitingSelect = document.querySelector("#recruitingSelect");
+
+	const savedValues = JSON.parse(
+		localStorage.getItem("dropdownValues") || "{}"
+	);
+
+	// Set saved values if available
+	if (savedValues.minimumMiningAllowed) {
+		miningSelect.value = savedValues.minimumMiningAllowed;
+	}
+	if (savedValues.minimumRecruitingAllowed) {
+		recruitingSelect.value = savedValues.minimumRecruitingAllowed;
+	}
+
+	// Add event listeners for changes in the dropdowns
+	miningSelect.addEventListener("change", saveAndSendDropdownValues);
+	recruitingSelect.addEventListener("change", saveAndSendDropdownValues);
+	saveAndSendDropdownValues();
+});
+
+// Save selected values to localStorage
+function saveDropdownValues() {
+	const miningSelect = document.querySelector("#miningSelect");
+	const recruitingSelect = document.querySelector("#recruitingSelect");
+
+	localStorage.setItem("minimumMiningAllowed", miningSelect.value);
+	localStorage.setItem("minimumRecruitingAllowed", recruitingSelect.value);
+}
+
+// Restore saved values from localStorage
+function restoreDropdownValues() {
+	const miningSelect = document.querySelector("#miningSelect");
+	const recruitingSelect = document.querySelector("#recruitingSelect");
+
+	const savedMiningValue = localStorage.getItem("minimumMiningAllowed");
+	const savedRecruitingValue = localStorage.getItem(
+		"minimumRecruitingAllowed"
+	);
+
+	// Set the saved values if they exist
+	if (savedMiningValue) {
+		miningSelect.value = savedMiningValue;
+	}
+	if (savedRecruitingValue) {
+		recruitingSelect.value = savedRecruitingValue;
+	}
+}
+
+// Event listener for saving and restoring values
+document.addEventListener("DOMContentLoaded", () => {
+	// Restore values when the popup opens
+	restoreDropdownValues();
+
+	// Save values when the dropdown selection changes
+	document
+		.querySelector("#miningSelect")
+		.addEventListener("change", saveDropdownValues);
+	document
+		.querySelector("#recruitingSelect")
+		.addEventListener("change", saveDropdownValues);
+});
+document.addEventListener("DOMContentLoaded", () => {
+	sendDataValuesToContentScript();
 });

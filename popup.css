@@ -25,7 +25,7 @@ input[type="color"] {
   color :#d9ff00;
   font-size: 11px
 }
-label, h1, h2, p, span{
+label, h1, h2, p, span, h4{
   color: white;
 }
 .switch {
@@ -91,7 +91,7 @@ input:checked + .slider:before {
   border: 3px solid red;
   border-radius: 20px;
 }
-.img_sty{
+.img_sty, .img_unit{
   border: 3px solid rgb(179, 78, 11);
 }
 .menu-text {
@@ -106,3 +106,25 @@ input:checked + .slider:before {
   margin-left : 10px;
   margin-right : 10px;
 }
+
+select{
+	width: 450px;
+  background-color: rgb(255, 0, 0);
+  color: #ffffff;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+.img_unit {
+  position: relative;
+  display: inline-block;
+}
+
+.checked {
+  border-color: rgb(0, 217, 255);
+}
+
+

@@ -393,11 +393,114 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.SummonAll !== undefined) {
 		// Forward the message to the injected script via window.postMessage
 		window.postMessage(
-			{ type: "SUMMON_ALL", summonAll: request.SummonAll },"*"
+			{ type: "SUMMON_ALL", summonAll: request.SummonAll },
+			"*"
 		);
 
 		// Optionally handle in the content script itself
 		console.log("Content script received SummonAll:", request.SummonAll);
+	}
+});
+//---------------------------------------------reroll---------------------------------------------\\
+function reroll_val() {
+	// Collect data from each relevant element
+	const data = {
+		unitClasses: [],
+		recruitingLevels: [],
+		miningLevels: [],
+	};
+
+	// Get extra classes from elements with class "unit-slot unit not-round"
+	document
+		.querySelectorAll(".unit-slot.unit.not-round")
+		.forEach((element) => {
+			const classes = Array.from(element.classList);
+			const extraClass = classes.find(
+				(cls) =>
+					cls !== "unit-slot" && cls !== "unit" && cls !== "not-round"
+			);
+			if (extraClass) {
+				data.unitClasses.push(extraClass);
+			}
+		});
+
+	// Get recruiting levels from elements with class "efficiency-container recruiting .text.small"
+	document
+		.querySelectorAll(".efficiency-container.recruiting .text.small")
+		.forEach((element) => {
+			const textContent = element.textContent.trim();
+			const match = textContent.match(/Lv\.\s*(\d+)/);
+			if (match) {
+				data.recruitingLevels.push(match[1]);
+			}
+		});
+
+	// Get mining levels from elements with class "efficiency-container mining .text.smaller"
+	document
+		.querySelectorAll(".efficiency-container.mining .text.smaller")
+		.forEach((element) => {
+			const textContent = element.textContent.trim();
+			const match = textContent.match(/Lv\.\s*(\d+)/);
+			if (match) {
+				data.miningLevels.push(match[1]);
+			}
+		});
+
+	// Send the collected data to injectedSocketScript.js via window.postMessage
+	window.postMessage({ type: "REROLL_VAL_DATA", data: data }, "*");
+}
+// Listen for messages from the injected script
+window.addEventListener("message", (event) => {
+	// Only process messages sent from the same page (not from other extensions or iframes)
+	if (event.source !== window) return;
+
+	if (event.data && event.data.type === "RerollData") {
+		if (("SENDdata", event.data.data)) {
+			//console.log("got")
+			reroll_val();
+		}
+		// Do something with the data, such as forwarding it to the background script
+		//chrome.runtime.sendMessage({ fromInjectedScript: event.data.data });
+	}
+});
+
+// Listen for messages from popup.js
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.type === "IMG_DATA_VALUES") {
+		const receivedDataValues = request.dataValues;
+		console.log("Received data-values from popup:", receivedDataValues);
+
+		// Process the data-values as needed
+		handleImageDataValues(receivedDataValues);
+	}
+});
+
+// Function to handle the received data-values
+function handleImageDataValues(dataValues) {
+	// Example: Log the data-values or perform actions with them
+	dataValues.forEach((value) => console.log("Image data-value:", value));
+}
+
+// Listen for messages from popup.js
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.type === "IMG_DATA_VALUES") {
+		const dataValues = request.dataValues;
+
+		// Forward the data to injectedSocketScript.js using window.postMessage
+		window.postMessage(
+			{ type: "IMG_DATA_VALUES_FOR_INJECTED", dataValues: dataValues },
+			"*"
+		);
+	}
+});
+// Listen for messages from popup.js
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.type === "DROPDOWN_VALUES") {
+		// Forward the dropdown values to injectedSocketScript.js
+		window.postMessage(
+			{ type: "DROPDOWN_VALUES_FOR_INJECTED", values: request.values },
+			"*"
+		);
 	}
 });
 
