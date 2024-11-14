@@ -4,6 +4,7 @@ let currentFieldID = 0;
 let currentIslandID = 0;
 let currentOwner = "";
 let currentRegion = "";
+let summonInterval = null;
 
 //----------------------------------------------------summon-all---------------------------------------------------\\
 let StateOFSummon = undefined;
@@ -63,19 +64,33 @@ function summonAllMain() {
 				summonButton.id = "summonButton";
 				summonButton.style.marginTop = "15px";
 				summonButton.style.marginBottom = "15px";
-				summonButton.innerHTML = "Summon Troops";
+				if (summonInterval) summonButton.innerHTML = "Stop Summon";
+				else summonButton.innerHTML = "Summon Troops";
 
 				outerDiv.append(summonButton);
 				fieldWindow.append(outerDiv);
 				// on button click executing the funtion for
 				summonButton.addEventListener("click", () => {
-					summonAllTroops(
-						currentFieldID,
-						currentIslandID,
-						currentOwner,
-						currentMap,
-						currentRegion
-					);
+					if (summonInterval) {
+						clearInterval(summonInterval);
+						summonInterval = null;
+						summonButton.innerHTML = "Summon Troops";
+						if (currentIslandID !== 0 && currentRegion !== "") {
+							window.$socket.emit("CONNECT_MAP", {
+								region: currentRegion,
+								islandIndex: currentIslandID,
+							});
+						}
+					} else {
+						summonButton.innerHTML = "Stop Summon";
+						summonAllTroops(
+							currentFieldID,
+							currentIslandID,
+							currentOwner,
+							currentMap,
+							currentRegion
+						);
+					}
 				});
 			}
 		}
@@ -139,6 +154,7 @@ function summonAllTroops(
 			});
 		}
 	}, 600);
+	summonInterval = sendTroops;
 }
 //-----------------------------------------------auto-reroll-------------------------------------------\\
 let newUnits = [];
@@ -147,8 +163,33 @@ let newMiningLevels = undefined;
 let AllowedUnits = [];
 let minRecruitingLevels = undefined;
 let minMiningLevels = undefined;
-let reroll_val_Reseved = 0;
+let reroll_val_interval = 0;
+let can_reroll = false;
+
+
+let StateOFReroll = undefined;
+
+// Listen for forwarded messages from contentScript.js
+window.addEventListener("message", (event) => {
+	if (event.source !== window) return; // Only accept messages from the same window
+	if (event.data.type === "REROLL_ALL") {
+		StateOFReroll = event.data.RerollAll;
+	}
+});
+
 function reroll() {
+	if (
+		newRecruitingLevels == undefined ||
+		newMiningLevels == undefined ||
+		minMiningLevels == undefined ||
+		minRecruitingLevels == undefined ||
+		newUnits.length == 0 ||
+		AllowedUnits.length == 0
+	) {
+		can_reroll = false;
+	} else {
+		can_reroll = true;
+	}
 	let unitMatch = newUnits.some((unit) => AllowedUnits.includes(unit));
 	let levelsMet =
 		newRecruitingLevels >= minRecruitingLevels &&
@@ -159,9 +200,10 @@ function reroll() {
 	console.log(levelsMet);
 	console.log(newRecruitingLevels, minRecruitingLevels);
 	console.log(newMiningLevels, minMiningLevels);
-	console.log(reroll_val_Reseved);
-	if (reroll_val_Reseved % 2 !== 0) {
-		if ((!unitMatch || !levelsMet) && isAutoRerolling) {
+	console.log(reroll_val_interval);
+	//only send the correct data when reroll_val_interval is odd num so it skips even nums
+	if (reroll_val_interval % 2 !== 0) {
+		if ((!unitMatch || !levelsMet) && isAutoRerolling && can_reroll) {
 			if (
 				!window.$socket._callbacks.$UPDATE_FIELD ||
 				window.$socket._callbacks.$UPDATE_FIELD.filter(
@@ -184,7 +226,7 @@ function reroll() {
 		}
 	}
 }
-let isAutoRerolling = true; // Flag to control reroll loop
+let isAutoRerolling = false; // Flag to control reroll loop
 
 function AutoReroll() {
 	setTimeout(() => {
@@ -210,11 +252,20 @@ function AutoReroll() {
 
 // Function to stop auto reroll manually
 function stopAutoReroll() {
+	const autoRerollButton = document.getElementById("AutoRerollButton");
+	if (autoRerollButton) {
+		autoRerollButton.remove();
+	}
 	isAutoRerolling = false;
 	console.log("Auto reroll stop requested.");
 }
 
 function AutoRerollRun() {
+	const autoRerollButton = document.getElementById("AutoRerollButton");
+	if (autoRerollButton) {
+		autoRerollButton.remove();
+	}
+	isAutoRerolling = true;
 	sendDataToContentScript({ message: "SENDdata" });
 }
 
@@ -255,11 +306,13 @@ function handleRerollData(data) {
 	console.log(levelsMet);
 	console.log(newRecruitingLevels, minRecruitingLevels);
 	console.log(newMiningLevels, minMiningLevels);
-	reroll_val_Reseved++;
+	reroll_val_interval++;
 	if (!unitMatch || !levelsMet) {
 		setTimeout(() => {
 			AutoReroll();
-		}, 2 * 1000);
+		}, 0.25 * 1000);
+	} else {
+		isAutoRerolling = false;
 	}
 }
 // Listen for messages from contentScript.js
@@ -312,43 +365,79 @@ function handleDropdownValues(minMining, minRecruiting) {
 }
 
 function reroll_button() {
-	const fieldWindow = document.querySelector("div.field.window");
-	if (fieldWindow) {
-		let AutoRerollButton = document.querySelector("#AutoRerollButton");
-		// Check for the div with class "switch-element active" containing the text "Upgrade"
-		const switchElement = document.querySelector(".switch-element.active");
-		const containsUpgradeText =
-			switchElement && switchElement.textContent.includes("Upgrade");
+	if (StateOFReroll) {
+		const fieldWindow = document.querySelector("div.field.window");
+		if (fieldWindow) {
+			let AutoRerollButton = document.querySelector("#AutoRerollButton");
+			// Check for the div with class "switch-element active" containing the text "Upgrade"
+			const switchElement = document.querySelector(".switch-element.active");
+			const containsUpgradeText =
+				switchElement && switchElement.textContent.includes("Upgrade");
 
-		// If the div contains the text "Upgrade", create the button if it doesn't exist
-		if (containsUpgradeText) {
-			if (!AutoRerollButton) {
-				const outerDiv = document.createElement("div");
-				outerDiv.classList.add("flex", "ai-c", "jc-c");
+			// If the div contains the text "Upgrade", create the button if it doesn't exist
+			if (containsUpgradeText) {
+				if (!AutoRerollButton) {
+					const outerDiv = document.createElement("div");
+					outerDiv.classList.add("flex", "ai-c", "jc-c");
 
-				AutoRerollButton = document.createElement("div");
-				AutoRerollButton.classList.add("button", "blue");
-				AutoRerollButton.id = "AutoRerollButton";
-				AutoRerollButton.style.marginTop = "15px";
-				AutoRerollButton.style.marginBottom = "15px";
-				AutoRerollButton.innerHTML = "Auto Reroll";
+					AutoRerollButton = document.createElement("div");
+					AutoRerollButton.classList.add("button", "blue");
+					AutoRerollButton.id = "AutoRerollButton";
+					AutoRerollButton.style.marginTop = "15px";
+					AutoRerollButton.style.marginBottom = "15px";
+					//AutoRerollButton.innerHTML = "Auto Reroll";
+					if (isAutoRerolling) {
+						console.log(isAutoRerolling);
+						AutoRerollButton.innerHTML = "Stop Auto Reroll";
+					} else if (!isAutoRerolling) {
+						console.log(isAutoRerolling);
+						AutoRerollButton.innerHTML = "Auto Reroll";
+					}
 
-				outerDiv.append(AutoRerollButton);
-				fieldWindow.append(outerDiv);
+					outerDiv.append(AutoRerollButton);
+					fieldWindow.append(outerDiv);
 
-				// Attach event listener to the button
-				AutoRerollButton.addEventListener("click", () => {
-					reroll();
-				});
-			}
-		} else {
-			// If the div does not contain the text "Upgrade", remove the button if it exists
-			if (AutoRerollButton) {
-				AutoRerollButton.remove();
-				AutoRerollButton = null;
+					// Attach event listener to the button
+					AutoRerollButton.addEventListener("click", () => {
+						if (!isAutoRerolling) {
+							AutoRerollRun();
+						} else if (isAutoRerolling) {
+							stopAutoReroll();
+						}
+					});
+				}
+			} else {
+				// If the div does not contain the text "Upgrade", remove the button if it exists
+				if (AutoRerollButton) {
+					AutoRerollButton.remove();
+					AutoRerollButton = null;
+				}
 			}
 		}
 	}
+}
+//---------------------------------------------flash island---------------------------------------------\\
+function flashIslands(flashMap, flashRegion) {
+	let i = 0;
+	const flash = setInterval(() => {
+		let island = flashMap[i];
+		while (
+			island &&
+			(island.islandEventClass === "none" ||
+				island.islandEventClass === null) &&
+			i < flashMap.length
+		) {
+			i++;
+			island = flashMap[i];
+		}
+		if (i >= flashMap.length) clearInterval(flash);
+
+		window.$socket.emit("CONNECT_MAP", {
+			region: flashRegion,
+			islandIndex: island.index,
+		});
+		i++;
+	}, 1000);
 }
 //---------------------------------------------run---------------------------------------------\\
 function run() {

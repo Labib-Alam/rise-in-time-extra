@@ -504,6 +504,22 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	}
 });
 
+
+// Listen for messages from popup.js and relay them to the injected script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	if (request.RerollAll !== undefined) {
+		// Forward the message to the injected script via window.postMessage
+		window.postMessage(
+			{ type: "REROLL_ALL", RerollAll: request.RerollAll },
+			"*"
+		);
+
+		// Optionally handle in the content script itself
+		console.log("Content script received RerollAll:", request.RerollAll);
+	}
+});
+
+
 //---------------------------------------------run---------------------------------------------\\
 
 injectSummonAllScript();
