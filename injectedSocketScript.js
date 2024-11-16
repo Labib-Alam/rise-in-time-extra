@@ -192,14 +192,14 @@ function reroll() {
 	}
 	let unitMatch = newUnits.some((unit) => AllowedUnits.includes(unit));
 	let levelsMet =
-		newRecruitingLevels >= minRecruitingLevels &&
-		newMiningLevels >= minMiningLevels;
+		parseInt(newRecruitingLevels) >= parseInt(minRecruitingLevels) &&
+		parseInt(newMiningLevels) >= parseInt(minMiningLevels);
 	console.log(AllowedUnits);
 	console.log(newUnits);
 	console.log(unitMatch);
 	console.log(levelsMet);
-	console.log(newRecruitingLevels, minRecruitingLevels);
-	console.log(newMiningLevels, minMiningLevels);
+	console.log(parseInt(newRecruitingLevels), parseInt(minRecruitingLevels));
+	console.log(parseInt(newMiningLevels), parseInt(minMiningLevels));
 	console.log(reroll_val_interval);
 	//only send the correct data when reroll_val_interval is odd num so it skips even nums
 	if (reroll_val_interval % 2 !== 0) {
@@ -298,14 +298,14 @@ function handleRerollData(data) {
 	console.log("Mining Levels:", newMiningLevels);
 	let unitMatch = newUnits.some((unit) => AllowedUnits.includes(unit));
 	let levelsMet =
-		newRecruitingLevels >= minRecruitingLevels &&
-		newMiningLevels >= minMiningLevels;
+		parseInt(newRecruitingLevels) >= parseInt(minRecruitingLevels) &&
+		parseInt(newMiningLevels) >= parseInt(minMiningLevels);
 	console.log(AllowedUnits);
 	console.log(newUnits);
 	console.log(unitMatch);
 	console.log(levelsMet);
-	console.log(newRecruitingLevels, minRecruitingLevels);
-	console.log(newMiningLevels, minMiningLevels);
+	console.log(parseInt(newRecruitingLevels), parseInt(minRecruitingLevels));
+	console.log(parseInt(newMiningLevels), parseInt(minMiningLevels));
 	reroll_val_interval++;
 	if (!unitMatch || !levelsMet) {
 		setTimeout(() => {
