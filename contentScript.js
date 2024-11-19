@@ -478,7 +478,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 // Function to handle the received data-values
 function handleImageDataValues(dataValues) {
 	// Example: Log the data-values or perform actions with them
-	dataValues.forEach((value) => console.log("Image data-value:", value));
+	dataValues.forEach((value) => {;})
 }
 
 // Listen for messages from popup.js
@@ -518,12 +518,68 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		console.log("Content script received RerollAll:", request.RerollAll);
 	}
 });
+//---------------------------------------------VULNERABLE---------------------------------------------\\
+function vulnerable() {
+	const vulnerabilities = {
+		'guard-naki':    [ 'forest-spirit', 'grass-spirit', 'nyxi', 'raider-naki', 'ovivi' ],
+		'athlas':	     [ 'forest-spirit', 'guard-naki', 'teryx' ],
+		'nyxi': 	     [ 'grass-spirit', 'ranax', 'vahloc' ],
+		'forest-spirit': [ 'druid-naki', 'ranax', 'teryx' ],
+		'grass-spirit':  [ 'druid-naki', 'ranax', 'teryx' ],
+		'elder-spirit':  [ 'druid-naki', 'guard-naki' ],
+		'vahloc':		 [ 'guard-naki', 'athlas', 'teryx' ],
+		'teryx':		 [ 'elder-spirit' ],
+		'ranax':		 [ 'elder-spirit', 'vahloc' ],
+		'druid-naki':	 [ 'nyxi', 'vahloc', 'raider-naki' ],
+		'raider-naki':	 [ 'athlas' ],
+		'ovivi': 		 [ 'athlas' ]
+	}
 
+	const unitDetail = document.querySelector(".unit-detail")
+	if (unitDetail){
+		const vulnerableDiv = document.getElementById('vulnerableDiv')
+		let unitName = unitDetail.querySelector(".title").innerHTML
+		
+		if (!vulnerableDiv){
+			let div = document.createElement("div")
+			div.classList.add("effective-container")
+			div.setAttribute("data-v-4d9dcced", '')
+			div.setAttribute('data-troop', `${unitName}`)
+			div.id = "vulnerableDiv"
+
+			let text = document.createElement("div")
+			text.classList.add("label")
+			text.innerText = "Vulnerable against: "
+			text.setAttribute("data-v-4d9dcced", '')
+			div.append(text)
+
+			let effectiveContainer = document.createElement("div")
+			effectiveContainer.classList.add("effective")
+			effectiveContainer.setAttribute("data-v-4d9dcced", '')
+			div.append(effectiveContainer)
+			
+			let formattedUnitName= unitName.replace(' ','-').toLowerCase()
+			vulnerabilities[formattedUnitName].forEach((unit)=>{		
+				let unitdiv = document.createElement("div")
+				unitdiv.classList.add(`${unit}`,"unit-small")
+				unitdiv.setAttribute("data-v-4d9dcced", '')
+				effectiveContainer.append(unitdiv)
+				
+			})
+			unitDetail.append(div)
+		}else if(unitName!==vulnerableDiv.getAttribute("data-troop")){
+			unitDetail.removeChild(vulnerableDiv)
+			vulnerable()
+		}
+		
+	}
+}
 
 //---------------------------------------------run---------------------------------------------\\
 
 injectSummonAllScript();
 function runALL() {
+	vulnerable()
 	if (_arti === "true" || _arti === true) {
 		loadSettingsAndApply();
 	}

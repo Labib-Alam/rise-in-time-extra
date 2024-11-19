@@ -105,9 +105,20 @@ function summonAllTroops(
 	summonRegion
 ) {
 	i = 0;
+	
 	//sending troops every 600ms, because the game doesn't like it when its faster than that
 	const sendTroops = setInterval(() => {
 		let field = summonMap[i];
+		if (i >= summonMap.length) {
+			let summonButton = document.getElementById("summonButton")
+			summonButton.innerText = "Summon Troops"
+			clearInterval(summonInterval);
+			summonInterval = null
+			window.$socket.emit("CONNECT_MAP", {
+				region: summonRegion,
+				islandIndex: summonIslandID,
+			});
+		}
 		//Checking if there are any units of specific type on the field and roudning the value to later add to our request
 		let units = field.units
 			.filter((unit) => unit.amount >= 1 && unit.owner === summonOwner)
@@ -145,14 +156,6 @@ function summonAllTroops(
 			);
 		}
 		i++;
-		// clearing interval is fine but not sure wheter the socket thing works to be fixed + soemtimes the interval doesnt get cleared and need a page restart
-		if (i >= summonMap.length) {
-			clearInterval(sendTroops);
-			window.$socket.emit("CONNECT_MAP", {
-				region: summonRegion,
-				islandIndex: summonIslandID,
-			});
-		}
 	}, 600);
 	summonInterval = sendTroops;
 }
@@ -194,13 +197,6 @@ function reroll() {
 	let levelsMet =
 		parseInt(newRecruitingLevels) >= parseInt(minRecruitingLevels) &&
 		parseInt(newMiningLevels) >= parseInt(minMiningLevels);
-	console.log(AllowedUnits);
-	console.log(newUnits);
-	console.log(unitMatch);
-	console.log(levelsMet);
-	console.log(parseInt(newRecruitingLevels), parseInt(minRecruitingLevels));
-	console.log(parseInt(newMiningLevels), parseInt(minMiningLevels));
-	console.log(reroll_val_interval);
 	//only send the correct data when reroll_val_interval is odd num so it skips even nums
 	if (reroll_val_interval % 2 !== 0) {
 		if ((!unitMatch || !levelsMet) && isAutoRerolling && can_reroll) {
@@ -300,12 +296,6 @@ function handleRerollData(data) {
 	let levelsMet =
 		parseInt(newRecruitingLevels) >= parseInt(minRecruitingLevels) &&
 		parseInt(newMiningLevels) >= parseInt(minMiningLevels);
-	console.log(AllowedUnits);
-	console.log(newUnits);
-	console.log(unitMatch);
-	console.log(levelsMet);
-	console.log(parseInt(newRecruitingLevels), parseInt(minRecruitingLevels));
-	console.log(parseInt(newMiningLevels), parseInt(minMiningLevels));
 	reroll_val_interval++;
 	if (!unitMatch || !levelsMet) {
 		setTimeout(() => {
@@ -333,10 +323,9 @@ window.addEventListener("message", (event) => {
 // Function to handle the received data-values
 function handleDataValuesFromContentScript(dataValues) {
 	AllowedUnits = dataValues;
-	console.log(AllowedUnits);
 	dataValues.forEach((value) => {
-		console.log("Processed data-value:", value);
 		// Perform any required actions with each data-value
+		;
 	});
 }
 // Listen for messages from contentScript.js
