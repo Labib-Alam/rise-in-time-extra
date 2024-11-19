@@ -532,7 +532,9 @@ function vulnerable() {
 		'ranax':		 [ 'elder-spirit', 'vahloc' ],
 		'druid-naki':	 [ 'nyxi', 'vahloc', 'raider-naki' ],
 		'raider-naki':	 [ 'athlas' ],
-		'ovivi': 		 [ 'athlas' ]
+		'ovivi': 		 [ 'athlas' ],
+		'pangoan':		 [],
+		'spotter-naki':	 []
 	}
 
 	const unitDetail = document.querySelector(".unit-detail")

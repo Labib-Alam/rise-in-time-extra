@@ -111,7 +111,7 @@ function summonAllTroops(
 		let field = summonMap[i];
 		if (i >= summonMap.length) {
 			let summonButton = document.getElementById("summonButton")
-			summonButton.innerText = "Summon Troops"
+			if (summonButton) summonButton.innerText = "Summon Troops"
 			clearInterval(summonInterval);
 			summonInterval = null
 			window.$socket.emit("CONNECT_MAP", {
