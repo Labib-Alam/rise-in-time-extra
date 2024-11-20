@@ -105,15 +105,15 @@ function summonAllTroops(
 	summonRegion
 ) {
 	i = 0;
-	
+
 	//sending troops every 600ms, because the game doesn't like it when its faster than that
 	const sendTroops = setInterval(() => {
 		let field = summonMap[i];
 		if (i >= summonMap.length) {
-			let summonButton = document.getElementById("summonButton")
-			if (summonButton) summonButton.innerText = "Summon Troops"
+			let summonButton = document.getElementById("summonButton");
+			if (summonButton) summonButton.innerText = "Summon Troops";
 			clearInterval(summonInterval);
-			summonInterval = null
+			summonInterval = null;
 			window.$socket.emit("CONNECT_MAP", {
 				region: summonRegion,
 				islandIndex: summonIslandID,
@@ -168,7 +168,6 @@ let minRecruitingLevels = undefined;
 let minMiningLevels = undefined;
 let reroll_val_interval = 0;
 let can_reroll = false;
-
 
 let StateOFReroll = undefined;
 
@@ -325,7 +324,6 @@ function handleDataValuesFromContentScript(dataValues) {
 	AllowedUnits = dataValues;
 	dataValues.forEach((value) => {
 		// Perform any required actions with each data-value
-		;
 	});
 }
 // Listen for messages from contentScript.js
@@ -359,7 +357,9 @@ function reroll_button() {
 		if (fieldWindow) {
 			let AutoRerollButton = document.querySelector("#AutoRerollButton");
 			// Check for the div with class "switch-element active" containing the text "Upgrade"
-			const switchElement = document.querySelector(".switch-element.active");
+			const switchElement = document.querySelector(
+				".switch-element.active"
+			);
 			const containsUpgradeText =
 				switchElement && switchElement.textContent.includes("Upgrade");
 
@@ -406,6 +406,55 @@ function reroll_button() {
 	}
 }
 //---------------------------------------------flash island---------------------------------------------\\
+
+let StateOfFlash = undefined;
+
+// Listen for forwarded messages from contentScript.js
+window.addEventListener("message", (event) => {
+	if (event.source !== window) return; // Only accept messages from the same window
+	if (event.data.type === "flash") {
+		StateOfFlash = event.data.flash;
+	}
+});
+
+function flashButton() {
+	if (StateOfFlash) {
+		//console.log("flash");
+		// Wait for the DOM to load
+		// Find the element with the class 'nav-element nav-infos'
+		const navElement = document.querySelector(".nav-element.nav-infos");
+		let button = document.querySelector(".flash-button");
+		//console.log("flash");
+
+		if (navElement && !button) {
+			//console.log("flash");
+			// Create a new button
+			const button = document.createElement("button");
+			button.textContent = "flash islands";
+			//button.style.margin = "10px";
+			button.style.padding = "5px 10px";
+			button.classList.add("flash-button");
+			button.style.cursor = "pointer";
+			button.style.backgroundColor = "black"; // Transparent background
+			button.style.color = "white"; // White text
+			button.style.border = "2px solid white"; // White border
+			button.style.borderRadius = "5px"; // Rounded corners
+			button.style.fontSize = "14px"; // Font size
+
+			// Add an event listener for the button
+			button.addEventListener("click", () => {
+				flashIslands(currentMap, currentRegion);
+			});
+
+			// Append the button to the navElement
+			navElement.appendChild(button);
+			//console.log("flash");
+		} else {
+			//console.warn("Element with class 'nav-element nav-infos' not found.");
+		}
+	}
+}
+
 function flashIslands(flashMap, flashRegion) {
 	let i = 0;
 	const flash = setInterval(() => {
@@ -429,7 +478,21 @@ function flashIslands(flashMap, flashRegion) {
 	}, 1000);
 }
 //---------------------------------------------run---------------------------------------------\\
+flashButton();
 function run() {
+	//console.log(currentMap,currentRegion)
+	let flashButton_ = document.querySelector(".island-code");
+	if (!flashButton_) {
+		flashButton();
+	}else{
+		let flashButton_ = document.querySelector(".flash-button");
+
+		// If the button exists, remove it
+		if (flashButton_) {
+			flashButton_.remove();
+			console.log("Flash button removed.");
+		}
+	}
 	summonAllMain();
 	reroll_button();
 }

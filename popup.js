@@ -49,6 +49,10 @@ let Summon_all_visible = false;
 let Summon_all_active = false;
 let reroll_visible = false;
 let reroll_active = false;
+let vurnability_visible = false;
+let vurnability_active = false;
+let flash_visible = false;
+let flash_active = false;
 //________________________________________________________________________________Artifact___________________________________________________________________________________\\
 
 // Add event listeners to color input fields
@@ -866,4 +870,100 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 document.addEventListener("DOMContentLoaded", () => {
 	sendDataValuesToContentScript();
+});
+//________________________________________________________________________________Flash___________________________________________________________________________________\\
+
+
+document.getElementById("flash_drop").addEventListener("click", () => {
+	if (flash_visible) {
+		flash_visible = false;
+		document.getElementById("flash").style.display = "none";
+	} else {
+		flash_visible = true;
+		document.getElementById("flash").style.display = "block";
+	}
+});
+const flash_ = document.getElementById("flash_active");
+// Listen for changes on the checkbox
+flash_.addEventListener("change", () => {
+	if (flash_.checked) {
+		flash_active = true;
+		// Add any additional actions you want to trigger when the switch is on
+	} else {
+		flash_active = false;
+		// Add any additional actions you want to trigger when the switch is off
+	}
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+	// Load the saved state from localStorage when the page loads
+	if (localStorage.getItem("flash_state") === "true") {
+		flash_.checked = true;
+	} else {
+		flash_.checked = false;
+	}
+
+	// Save the state to localStorage whenever the switch is toggled
+	flash_.addEventListener("change", () => {
+		const isChecked_flash = flash_.checked;
+		localStorage.setItem("flash_state", isChecked_flash);
+
+		// Communicate the state to the content script
+		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			chrome.tabs.sendMessage(tabs[0].id, {
+				flash: isChecked_flash,
+			});
+		});
+	});
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		chrome.tabs.sendMessage(tabs[0].id, { flash: flash_.checked });
+	});
+});
+//________________________________________________________________________________vurnability___________________________________________________________________________________\\
+
+
+document.getElementById("vurnability_drop").addEventListener("click", () => {
+	if (reroll_visible) {
+		reroll_visible = false;
+		document.getElementById("vurnability").style.display = "none";
+	} else {
+		reroll_visible = true;
+		document.getElementById("vurnability").style.display = "block";
+	}
+});
+const vurnability_ = document.getElementById("vurnability_active");
+// Listen for changes on the checkbox
+vurnability_.addEventListener("change", () => {
+	if (vurnability_.checked) {
+		vurnability_active = true;
+		// Add any additional actions you want to trigger when the switch is on
+	} else {
+		vurnability_active = false;
+		// Add any additional actions you want to trigger when the switch is off
+	}
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+	// Load the saved state from localStorage when the page loads
+	if (localStorage.getItem("vurnability_state") === "true") {
+		vurnability_.checked = true;
+	} else {
+		vurnability_.checked = false;
+	}
+
+	// Save the state to localStorage whenever the switch is toggled
+	vurnability_.addEventListener("change", () => {
+		const isChecked_vurnability = vurnability_.checked;
+		localStorage.setItem("vurnability_state", isChecked_vurnability);
+
+		// Communicate the state to the content script
+		chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+			chrome.tabs.sendMessage(tabs[0].id, {
+				Vurnability: isChecked_vurnability,
+			});
+		});
+	});
+	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+		chrome.tabs.sendMessage(tabs[0].id, { Vurnability: vurnability_.checked });
+	});
 });
