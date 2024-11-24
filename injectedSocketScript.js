@@ -406,8 +406,8 @@ function reroll_button() {
 	}
 }
 //---------------------------------------------flash island---------------------------------------------\\
-
 let StateOfFlash = undefined;
+let Region = { islands: {} };
 
 // Listen for forwarded messages from contentScript.js
 window.addEventListener("message", (event) => {
@@ -455,9 +455,68 @@ function flashButton() {
 	}
 }
 
+function getPixelCoordinates(coordinate) {
+	// Define grid settings
+	const startX = 55; // Starting X coordinate for A1
+	const startY = 15; // Starting Y coordinate for A1
+	const tileWidth = 100; // Horizontal distance between numbers (1-20)
+	const tileHeight = 100; // Vertical distance between letters (A-Z)
+	let showOwner = false;
+	portalCord = parseInt(coordinate);
+	//console.log(isNaN(portalCord))
+	//console.log(portalCord)
+	if (isNaN(portalCord)) {
+		showOwner = false;
+	} else {
+		showOwner = true;
+	}
+	//console.log(showOwner)
+	// Parse the coordinate
+	const column =
+		coordinate[0].toLowerCase().charCodeAt(0) - "a".charCodeAt(0); // Column offset (Affects Y)
+	//console.log
+	const row = parseInt(coordinate.slice(1), 10) - 1; // Row offset (Affects X)
+
+	// Calculate pixel coordinates
+	const x = startX + row * tileWidth; // Adjust X by row offset
+	const y = startY + column * tileHeight; // Adjust Y by column offset
+
+	return { x, y, showOwner };
+}
+
+function logElementByTranslate(x, y, owner, showOwner) {
+	const elements = document.querySelectorAll(".content.centered");
+
+	for (const element of elements) {
+		const inlineStyle = element.getAttribute("style");
+
+		if (inlineStyle && inlineStyle.includes("transform")) {
+			const matches = inlineStyle.match(
+				/translate\(([-\d.]+)px, ([-\d.]+)px\)/g
+			);
+
+			if (matches) {
+				const lastMatch = matches[matches.length - 1];
+				const [, xVal, yVal] = lastMatch.match(
+					/translate\(([-\d.]+)px, ([-\d.]+)px\)/
+				);
+
+				if (showOwner) {
+					return owner;
+				} else if (parseFloat(xVal) === x && parseFloat(yVal) === y) {
+					return element.textContent.trim();
+				}
+			}
+		}
+	}
+
+	// return undefined; // Explicit return if no match is found
+}
+
 function flashIslands(flashMap, flashRegion) {
 	let i = 0;
 	const flash = setInterval(() => {
+		let owner_ = undefined;
 		let island = flashMap[i];
 		while (
 			island &&
@@ -474,8 +533,72 @@ function flashIslands(flashMap, flashRegion) {
 			region: flashRegion,
 			islandIndex: island.index,
 		});
+		console.log(island);
+
 		i++;
+		setTimeout(() => {
+			// Select the parent div with class "natures"
+			const naturesDiv = document.querySelector(".natures");
+
+			// Get all child elements inside the natures div
+			const items = naturesDiv.querySelectorAll("*");
+
+			// Iterate through each child element and log their class lists
+			items.forEach((item) => {
+				const field = [...item.classList].filter(
+					(className) =>
+						className !== "rpHints" && className !== "nature"
+				);
+				console.log(field, island.code, island.islandEventClass);
+				// Logs an array of classes for each item
+				if (field.length > 0) {
+					console.log(field[0].replace(/^f-/, "")); // Log the modified class
+					if (field[1] == "enemy") {
+						console.log(
+							getPixelCoordinates(field[0].replace(/^f-/, ""))
+						);
+						//console.log(
+						owner_ = logElementByTranslate(
+							getPixelCoordinates(field[0].replace(/^f-/, "")).x,
+							getPixelCoordinates(field[0].replace(/^f-/, "")).y,
+							island.owner,
+							getPixelCoordinates(field[0].replace(/^f-/, ""))
+								.showOwner
+						);
+						console.log(
+							logElementByTranslate(
+								getPixelCoordinates(field[0].replace(/^f-/, ""))
+									.x,
+								getPixelCoordinates(field[0].replace(/^f-/, ""))
+									.y,
+								island.owner,
+								getPixelCoordinates(field[0].replace(/^f-/, ""))
+									.showOwner
+							)
+						);
+						//);
+						//console.log(getPixelCoordinates(field[0].replace(/^f-/, "")).x);
+						console.log(
+							getPixelCoordinates(field[0].replace(/^f-/, "")).y
+						);
+					}
+				}
+				if (!Region.islands[island.code]) {
+					Region.islands[island.code] = { fields: {} }; // Initialize the island object with a fields object
+				}
+				Region.islands[island.code].fields[
+					field[0].replace(/^f-/, "")
+				] = {
+					coordinate: field[0].replace(/^f-/, ""),
+					ownership: owner_ || "System",
+				};
+			});
+		}, 900);
+		//let Region = {islands : {}};
+		//console.log(island)
+		
 	}, 1000);
+	console.log(Region);
 }
 //---------------------------------------------run---------------------------------------------\\
 flashButton();
@@ -484,7 +607,7 @@ function run() {
 	let flashButton_ = document.querySelector(".island-code");
 	if (!flashButton_) {
 		flashButton();
-	}else{
+	} else {
 		let flashButton_ = document.querySelector(".flash-button");
 
 		// If the button exists, remove it
