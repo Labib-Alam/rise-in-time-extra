@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		// menuItems.forEach(item => { item.style.display = 'block'; });
 		setTimeout(() => {
 			window.close();
-		}, 200);
+		}, 300);
 	}
 });
 //chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
