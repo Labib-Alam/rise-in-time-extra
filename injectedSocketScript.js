@@ -42,12 +42,19 @@ function summonAllMain() {
 	) {
 		window.$socket.on("UPDATE_MAP", function updateCurrentMap(e) {
 			currentMap = e;
+			let regionView = undefined
 			e.forEach((field) => {
 				//looking for portal field and extracting its region data
-				if (field.nature === "portal") {
-					currentRegion == field.region;
+				if (field.nature !== "portal") {
+					regionView = false
+					currentIslandID = field.islandIndex
+				}else{
+				currentRegion = field.region
+				if (regionView!==false){
+					regionView = true
 				}
-			});
+			}});
+			if (regionView===true) currentIslandID=0;
 		});
 	}
 	// checking if current gamestate has any fieldwindow opened if so adding a button to summon troops, the div is needed for styling
@@ -604,8 +611,7 @@ function flashIslands(flashMap, flashRegion) {
 flashButton();
 function run() {
 	//console.log(currentMap,currentRegion)
-	let flashButton_ = document.querySelector(".island-code");
-	if (!flashButton_) {
+	if (currentIslandID===0) {
 		flashButton();
 	} else {
 		let flashButton_ = document.querySelector(".flash-button");
