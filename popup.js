@@ -53,6 +53,8 @@ let vurnability_visible = false;
 let vurnability_active = false;
 let flash_visible = false;
 let flash_active = false;
+let book_visible = false;
+let rank_visible = false;
 //________________________________________________________________________________Artifact___________________________________________________________________________________\\
 
 // Add event listeners to color input fields
@@ -966,4 +968,70 @@ document.addEventListener("DOMContentLoaded", () => {
 	chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 		chrome.tabs.sendMessage(tabs[0].id, { Vurnability: vurnability_.checked });
 	});
+});
+
+//________________________________________________________________________________book___________________________________________________________________________________\\
+
+document.getElementById("book_drop").addEventListener("click", () => {
+    if (book_visible) {
+        book_visible = false;
+        document.getElementById("book").style.display = "none";
+    } else {
+        book_visible = true;
+        document.getElementById("book").style.display = "block";
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const book_ = document.getElementById("book_active");
+    
+    if (localStorage.getItem("book_state") === "true") {
+        book_.checked = true;
+    }
+
+    book_.addEventListener("change", () => {
+        const isChecked = book_.checked;
+        localStorage.setItem("book_state", isChecked);
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            chrome.tabs.sendMessage(tabs[0].id, {
+                book: isChecked,
+            });
+        });
+    });
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { book: book_.checked });
+    });
+});
+
+//________________________________________________________________________________rank___________________________________________________________________________________\\
+
+document.getElementById("rank_drop").addEventListener("click", () => {
+    if (rank_visible) {
+        rank_visible = false;
+        document.getElementById("rank").style.display = "none";
+    } else {
+        rank_visible = true;
+        document.getElementById("rank").style.display = "block";
+    }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const rank_ = document.getElementById("rank_active");
+    
+    if (localStorage.getItem("rank_state") === "true") {
+        rank_.checked = true;
+    }
+
+    rank_.addEventListener("change", () => {
+        const isChecked = rank_.checked;
+        localStorage.setItem("rank_state", isChecked);
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            chrome.tabs.sendMessage(tabs[0].id, {
+                rank: isChecked,
+            });
+        });
+    });
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { rank: rank_.checked });
+    });
 });

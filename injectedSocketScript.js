@@ -611,7 +611,17 @@ function flashIslands(flashMap, flashRegion) {
 
 // Add this function after the existing code
 
+let bookEnabled = undefined;
+
+window.addEventListener("message", (event) => {
+    if (event.data.type === "book") {
+        bookEnabled = event.data.book;
+    }
+});
+
 function addBookButton() {
+    if (!bookEnabled) return;
+    
     const navElement = document.querySelector(".nav-element.nav-infos");
     let bookButton = document.querySelector(".book-button");
 
@@ -657,6 +667,6 @@ function run() {
     }
     summonAllMain();
     reroll_button();
-    addBookButton(); // Add this line
+    if (bookEnabled) addBookButton();
 }
 setInterval(run, 200);

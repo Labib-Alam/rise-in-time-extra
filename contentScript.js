@@ -608,6 +608,8 @@ function vulnerable() {
 }
 //---------------------------------------------rank-player---------------------------------------------\\
 function rank() {
+    if (!rankEnabled) return;
+
     // Select the element with the "title" class
     const titleElement = document.querySelector(".title");
     
@@ -682,10 +684,23 @@ function runALL() {
 	if (vurnability === "true" || vurnability === true) {
 		vulnerable();
 	}
-	rank();
+	if (rankEnabled) rank();
 		//console.log("update function called");
 }
 setInterval(runALL, 200);
+
+let bookEnabled = undefined;
+let rankEnabled = undefined;
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.book !== undefined) {
+        bookEnabled = request.book;
+        window.postMessage({ type: "book", book: request.book }, "*");
+    }
+    if (request.rank !== undefined) {
+        rankEnabled = request.rank;
+    }
+});
 
 // Add this near the end of the file
 // Listen for guide URL requests from injectedSocketScript
