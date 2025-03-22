@@ -516,22 +516,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 		// Optionally handle in the content script itself
 		console.log("Content script received RerollAll:", request.RerollAll);
 	}
-}); 
+});
 //---------------------------------------------Flash---------------------------------------------\\
 
 // Listen for messages from popup.js and relay them to the injected script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.flash !== undefined) {
 		// Forward the message to the injected script via window.postMessage
-		window.postMessage(
-			{ type: "flash", flash: request.flash },
-			"*"
-		);
+		window.postMessage({ type: "flash", flash: request.flash }, "*");
 
 		// Optionally handle in the content script itself
 		console.log("Content script received flash:", request.flash);
 	}
-}); 
+});
 //---------------------------------------------VULNERABLE---------------------------------------------\\
 let vurnability = undefined;
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -606,7 +603,105 @@ function vulnerable() {
 		}
 	}
 }
+//---------------------------------------------rank-player---------------------------------------------\\
+function rank() {
+	// Select the element with the "title" class
+	const titleElement = document.querySelector(".title");
 
+	// Check if the element exists and if its content matches "Fexeek"
+
+	// Check if a <p> with the "rank" class already exists after the title element
+	const rankElement = titleElement.nextElementSibling;
+	if (!rankElement || !rankElement.classList.contains("rank")) {
+		// Create the new <p> element
+		const newElement = document.createElement("p");
+		newElement.className = "rank";
+		if (titleElement && titleElement.textContent.trim() === "Fexeek") {
+			newElement.innerHTML =
+				'<br><span style="background-color: green">​ modder ​</span>  <span style="background-color: yellow; color: black;">​ Regional Master ​</span>  <span style="background-color: orange;">​ Dominion pro ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (
+			titleElement &&
+			titleElement.textContent.trim() === "Sherovec"
+		) {
+			newElement.innerHTML =
+				'<br><span style="background-color: purple">​ G.O.A.T ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span> <br> <br> <span style="background-color: black">​  Dragon Hunter ​</span>  <span style="background-color: black">​ Quickstab King  ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (
+			titleElement &&
+			titleElement.textContent.trim() === "GameCoder"
+		) {
+			newElement.innerHTML =
+				'<br><span style="background-color: green">​ modder ​</span>  <span style="background-color: red">​ Youtube ​</span>  <span style="background-color: orange">​ Master ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (
+			titleElement &&
+			titleElement.textContent.trim() === "AskAlice"
+		) {
+			newElement.innerHTML =
+				'<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (
+			titleElement &&
+			titleElement.textContent.trim() === "Hitesh"
+		) {
+			newElement.innerHTML =
+				'<br><span style="background-color: red">​ Dominion Master ​</span>  <span style="background-color: orange">​ Master ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (
+			titleElement &&
+			titleElement.textContent.trim() === "Ratte"
+		) {
+			newElement.innerHTML =
+				'<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (titleElement && titleElement.textContent.trim() === "m453") {
+			newElement.innerHTML =
+				'<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (
+			titleElement &&
+			titleElement.textContent.trim() === "memememe"
+		) {
+			newElement.innerHTML =
+				'<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (
+			titleElement &&
+			titleElement.textContent.trim() === "Zahikusa"
+		) {
+			newElement.innerHTML =
+				'<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (
+			titleElement &&
+			titleElement.textContent.trim() === "Ibexor"
+		) {
+			newElement.innerHTML =
+				'<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
+
+			// Insert the new element after the "title" element
+		} else if (
+			titleElement &&
+			titleElement.textContent.trim() === "Ramsus"
+		) {
+			newElement.innerHTML =
+				'<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
+
+			// Insert the new element after the "title" element
+		}
+		titleElement.insertAdjacentElement("afterend", newElement);
+	}
+}
 //---------------------------------------------run---------------------------------------------\\
 
 injectSummonAllScript();
@@ -627,6 +722,7 @@ function runALL() {
 	if (vurnability === "true" || vurnability === true) {
 		vulnerable();
 	}
+	rank();
 	//console.log("update function called");
 }
 setInterval(runALL, 200);
