@@ -30,7 +30,8 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["injectedSocketScript.js"],
+      "resources": ["injectedSocketScript.js", "guide.html"],
       "matches": ["<all_urls>"]
-    }]
+    }
+  ]
 }

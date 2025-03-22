@@ -152,7 +152,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 	}
 	//console.log(_arti);
 });
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.value !== undefined) {
 		pfp = request.value;
@@ -160,6 +159,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (_pfp === "true" || _pfp === true) {
 		if (request.action === "updateClass") {
 			const mainDiv = document.querySelector("div[data-v-06630c0a]");
+			
 			if (mainDiv) {
 				const profileIconDiv = mainDiv.querySelector(".profile-icon");
 				const generalInfoSectionDiv = mainDiv.querySelector(
@@ -178,6 +178,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 					}
 				}
 			}
+			//pfp in left corner
 			const targetElement = document.querySelector(
 				"[data-v-62f8e528][data-v-0cb4d7c1]"
 			);
@@ -190,6 +191,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 				}
 				targetElement.classList.add(request.value);
 			}
+			//pfp in menu
 			const menu_div = document.querySelector(".menuu");
 			if (menu_div) {
 				const profileIconMenu = menu_div.querySelector(".profile-icon");
@@ -202,6 +204,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 					profileIconMenu.classList.add(request.value);
 				}
 			}
+			//pfp in chat
 			const chatDivs = document.querySelectorAll(".self");
 
 			chatDivs.forEach((chatDiv) => {
@@ -605,102 +608,59 @@ function vulnerable() {
 }
 //---------------------------------------------rank-player---------------------------------------------\\
 function rank() {
-	// Select the element with the "title" class
-	const titleElement = document.querySelector(".title");
+    // Select the element with the "title" class
+    const titleElement = document.querySelector(".title");
+    
+    // Exit early if no title element found
+    if (!titleElement) return;
 
-	// Check if the element exists and if its content matches "Fexeek"
+    // Check if a <p> with the "rank" class already exists after the title element
+    const existingRankElement = titleElement.nextElementSibling;
+    if (existingRankElement && existingRankElement.classList.contains("rank")) {
+        return;
+    }
 
-	// Check if a <p> with the "rank" class already exists after the title element
-	const rankElement = titleElement.nextElementSibling;
-	if (!rankElement || !rankElement.classList.contains("rank")) {
-		// Create the new <p> element
-		const newElement = document.createElement("p");
-		newElement.className = "rank";
-		if (titleElement && titleElement.textContent.trim() === "Fexeek") {
-			newElement.innerHTML =
-				'<br><span style="background-color: green">​ modder ​</span>  <span style="background-color: yellow; color: black;">​ Regional Master ​</span>  <span style="background-color: orange;">​ Dominion pro ​</span>';
+    // Create the new <p> element
+    const newElement = document.createElement("p");
+    newElement.className = "rank";
 
-			// Insert the new element after the "title" element
-		} else if (
-			titleElement &&
-			titleElement.textContent.trim() === "Sherovec"
-		) {
-			newElement.innerHTML =
-				'<br><span style="background-color: purple">​ G.O.A.T ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span> <br> <br> <span style="background-color: black">​  Dragon Hunter ​</span>  <span style="background-color: black">​ Quickstab King  ​</span>';
+    // Switch based on title content
+    switch (titleElement.textContent.trim()) {
+        case "Fexeek":
+            newElement.innerHTML = '<br><span style="background-color: green">​ modder ​</span>  <span style="background-color: yellow; color: black;">​ Regional Master ​</span>  <span style="background-color: orange;">​ Dominion pro ​</span>';
+            break;
+        case "Sherovec":
+            newElement.innerHTML = '<br><span style="background-color: purple">​ G.O.A.T ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span> <br> <br> <span style="background-color: black">​  Dragon Hunter ​</span>  <span style="background-color: black">​ Quickstab King  ​</span>';
+            break;
+        case "GameCoder":
+            newElement.innerHTML = '<br><span style="background-color: green">​ modder ​</span>  <span style="background-color: red">​ Youtube ​</span>  <span style="background-color: orange">​ Master ​</span>';
+            break;
+        case "AskAlice":
+            newElement.innerHTML = '<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span>';
+            break;
+        case "Hitesh":
+            newElement.innerHTML = '<br><span style="background-color: red">​ Dominion Master ​</span>  <span style="background-color: orange">​ Master ​</span>';
+            break;
+        case "Ratte":
+            newElement.innerHTML = '<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span>';
+            break;
+        case "m453":
+            newElement.innerHTML = '<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
+            break;
+        case "memememe":
+            newElement.innerHTML = '<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
+            break;
+        case "Zahikusa":
+        case "Ibexor":
+        case "Ramsus":
+            newElement.innerHTML = '<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
+            break;
+        default:
+            return; // Don't add rank for unrecognized names
+    }
 
-			// Insert the new element after the "title" element
-		} else if (
-			titleElement &&
-			titleElement.textContent.trim() === "GameCoder"
-		) {
-			newElement.innerHTML =
-				'<br><span style="background-color: green">​ modder ​</span>  <span style="background-color: red">​ Youtube ​</span>  <span style="background-color: orange">​ Master ​</span>';
-
-			// Insert the new element after the "title" element
-		} else if (
-			titleElement &&
-			titleElement.textContent.trim() === "AskAlice"
-		) {
-			newElement.innerHTML =
-				'<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span>';
-
-			// Insert the new element after the "title" element
-		} else if (
-			titleElement &&
-			titleElement.textContent.trim() === "Hitesh"
-		) {
-			newElement.innerHTML =
-				'<br><span style="background-color: red">​ Dominion Master ​</span>  <span style="background-color: orange">​ Master ​</span>';
-
-			// Insert the new element after the "title" element
-		} else if (
-			titleElement &&
-			titleElement.textContent.trim() === "Ratte"
-		) {
-			newElement.innerHTML =
-				'<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span>';
-
-			// Insert the new element after the "title" element
-		} else if (titleElement && titleElement.textContent.trim() === "m453") {
-			newElement.innerHTML =
-				'<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
-
-			// Insert the new element after the "title" element
-		} else if (
-			titleElement &&
-			titleElement.textContent.trim() === "memememe"
-		) {
-			newElement.innerHTML =
-				'<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
-
-			// Insert the new element after the "title" element
-		} else if (
-			titleElement &&
-			titleElement.textContent.trim() === "Zahikusa"
-		) {
-			newElement.innerHTML =
-				'<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
-
-			// Insert the new element after the "title" element
-		} else if (
-			titleElement &&
-			titleElement.textContent.trim() === "Ibexor"
-		) {
-			newElement.innerHTML =
-				'<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
-
-			// Insert the new element after the "title" element
-		} else if (
-			titleElement &&
-			titleElement.textContent.trim() === "Ramsus"
-		) {
-			newElement.innerHTML =
-				'<br><span style="background-color: blue">​ Dev ​</span>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: orange">​ Dominion pro ​</span>';
-
-			// Insert the new element after the "title" element
-		}
-		titleElement.insertAdjacentElement("afterend", newElement);
-	}
+    // Insert the new element after the title element
+    titleElement.insertAdjacentElement("afterend", newElement);
 }
 //---------------------------------------------run---------------------------------------------\\
 
@@ -723,6 +683,15 @@ function runALL() {
 		vulnerable();
 	}
 	rank();
-	//console.log("update function called");
+		//console.log("update function called");
 }
 setInterval(runALL, 200);
+
+// Add this near the end of the file
+// Listen for guide URL requests from injectedSocketScript
+window.addEventListener("message", (event) => {
+    if (event.data.type === "GET_GUIDE_URL") {
+        const guideUrl = chrome.runtime.getURL('guide.html');
+        window.postMessage({ type: "GUIDE_URL_RESPONSE", url: guideUrl }, "*");
+    }
+});

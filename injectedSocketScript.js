@@ -607,22 +607,56 @@ function flashIslands(flashMap, flashRegion) {
 	}, 1000);
 	console.log(Region);
 }
+//---------------------------------------------add-book---------------------------------------------\\
+
+// Add this function after the existing code
+
+function addBookButton() {
+    const navElement = document.querySelector(".nav-element.nav-infos");
+    let bookButton = document.querySelector(".book-button");
+
+    if (navElement && !bookButton) {
+        // Create a new button
+        const button = document.createElement("button");
+        button.textContent = "📖";
+        button.classList.add("book-button");
+        button.style.cursor = "pointer";
+        button.style.backgroundColor = "#000";
+        button.style.color = "white";
+        button.style.border = "2px solid white";
+        button.style.borderRadius = "5px";
+        button.style.fontSize = "25px";
+        button.style.marginLeft = "10px";
+
+        // Request guide URL through messaging
+        button.addEventListener("click", () => {
+            window.postMessage({ type: "GET_GUIDE_URL" }, "*");
+        });
+
+        navElement.appendChild(button);
+    }
+}
+
+// Add URL response listener
+window.addEventListener("message", (event) => {
+    if (event.data.type === "GUIDE_URL_RESPONSE") {
+        window.open(event.data.url, '_blank');
+    }
+});
+
 //---------------------------------------------run---------------------------------------------\\
 flashButton();
 function run() {
-	//console.log(currentMap,currentRegion)
-	if (currentIslandID===0) {
-		flashButton();
-	} else {
-		let flashButton_ = document.querySelector(".flash-button");
-
-		// If the button exists, remove it
-		if (flashButton_) {
-			flashButton_.remove();
-			console.log("Flash button removed.");
-		}
-	}
-	summonAllMain();
-	reroll_button();
+    if (currentIslandID===0) {
+        flashButton();
+    } else {
+        let flashButton_ = document.querySelector(".flash-button");
+        if (flashButton_) {
+            flashButton_.remove();
+        }
+    }
+    summonAllMain();
+    reroll_button();
+    addBookButton(); // Add this line
 }
 setInterval(run, 200);
