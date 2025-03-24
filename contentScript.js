@@ -1,3 +1,44 @@
+//_______________________________________________________________mobile___________________________________________________________________________________________\\
+
+    function createMobileButton() {
+        // Check if screen width is mobile-sized
+        if (window.innerWidth > 768) return;
+
+        // Ensure we only add the button once
+        if (document.getElementById('mobile-popup-button')) return;
+
+        // Find the target container
+        let targetContainer = document.querySelector('.nav-element.nav-infos');
+		
+        if (!targetContainer) return;
+
+        // Create the button
+        let button = document.createElement('button');
+        button.id = 'mobile-popup-button';
+        button.innerHTML = '<img src="favicon.ico" style="width: 20px; height: 20px; margin-right: 5px;">';
+        button.style.padding = '5px 0px';
+        button.style.background = '#fff';
+        button.style.color = '#fff';
+        button.style.border = 'none';
+        button.style.borderRadius = '5px';
+        button.style.cursor = 'pointer';
+        button.style.fontSize = '14px';
+        button.style.zIndex = '1000';
+        button.style.display = 'block';
+
+        // Button click event
+        button.addEventListener('click', function () {
+            window.open(chrome.runtime.getURL('popup.html'), '_blank');
+        });
+
+        // Append to the container
+        targetContainer.appendChild(button);
+    }
+
+	// createMobileButton()
+
+
+
 //________________________________________________________________________________Artifact___________________________________________________________________________________\\
 // Apply the changes with stored settings or default values
 function applyChanges(
@@ -643,7 +684,8 @@ function rank() {
         case "Hitesh":
             newElement.innerHTML = '<br><span style="background-color: red">​ Dominion Master ​</span>  <span style="background-color: orange">​ Master ​</span>';
             break;
-        case "Ratte":
+		case "Ratte":
+		case "Extirpator":
             newElement.innerHTML = '<br>  <span style="background-color: red">​ Grand Master ​</span>  <span style="background-color: red">​ Dominion Master ​</span>';
             break;
         case "m453":
@@ -686,6 +728,8 @@ function runALL() {
 	}
 	if (rankEnabled) rank();
 		//console.log("update function called");
+	createMobileButton()
+	
 }
 setInterval(runALL, 200);
 
